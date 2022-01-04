@@ -1,13 +1,14 @@
 import mysql.connector
 
-# host = input("Host: ")
-# user = input("User: ")
-# password = input("Password: ")
-# db = input("Database: ")
-host = "localhost"
-user = "root"
-password = "ayushaher"
-db = "avante"
+host = input("Host: ")
+user = input("User: ")
+password = input("Password: ")
+db = input("Database: ")
+
+# host = "localhost"
+# user = "root"
+# password = "ayushaher"
+# db = "avante"
 
 mydb = mysql.connector.connect(
     host=host,
@@ -48,8 +49,8 @@ def createTriggers(table, action, db):
     ovalue = "ovalue=concat('{',"
     for columns in lstColumns:
         columns = columns[0]
-        nvalue += f"'{columns}:'," + "'\"'" + f", new.{columns} ," + "'\"',"
-        ovalue += f"'{columns}:'," + "'\"'" + f", old.{columns} ," + "'\"',"
+        nvalue += "'\"'" + f",'{columns}'," + "'\"'" + ",':'," + "'\"'" + f", new.{columns} ," + "'\",',"
+        ovalue += "'\"'" + f",'{columns}'," + "'\"'" + ",':'," + "'\"'" + f", old.{columns} ," + "'\",',"
     nvalue = nvalue[:-1]
     nvalue += ",'}'),"
     ovalue = ovalue[:-1]
