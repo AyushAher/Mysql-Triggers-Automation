@@ -19,6 +19,7 @@ mydb = mysql.connector.connect(
 )
 mycursor = mydb.cursor(buffered=True)
 path = input("Path of the file where you want to save: ")
+# path = "G:\Professional Projects\Avante\code\DB\Triggers"
 actions = ["insert", "update", "delete"]
 
 
@@ -45,16 +46,20 @@ def createTriggers(table, action, db):
 
     mycursor.execute(f"show columns from {table}")
     lstColumns = mycursor.fetchall()
-    nvalue = "nvalue=concat('{',"
-    ovalue = "ovalue=concat('{',"
+    nvalue = "nvalue=concat('`{',"
+    ovalue = "ovalue=concat('`{',"
     for columns in lstColumns:
         columns = columns[0]
         nvalue += "'\"'" + f",'{columns}'," + "'\"'" + ",':'," + "'\"'" + f", new.{columns} ," + "'\",',"
         ovalue += "'\"'" + f",'{columns}'," + "'\"'" + ",':'," + "'\"'" + f", old.{columns} ," + "'\",',"
     nvalue = nvalue[:-1]
-    nvalue += ",'}'),"
+    nvalue = nvalue[:len(nvalue) - 5]
+    nvalue += "'\"'"
+    nvalue += ",'}`'),"
     ovalue = ovalue[:-1]
-    ovalue += ",'}'),"
+    ovalue = ovalue[:len(ovalue) - 5]
+    ovalue += ",'}`'),"
+    ovalue += "'\"'"
 
     if action == "insert":
         triggers.append(nvalue)
