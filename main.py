@@ -1,9 +1,13 @@
 import mysql.connector
 
-host = input("Host: ")
-user = input("User: ")
-password = input("Password: ")
-db = input("Database: ")
+# host = input("Host: ")
+# user = input("User: ")
+# password = input("Password: ")
+# db = input("Database: ")
+host = "localhost"
+user = "root"
+password = "ayushaher"
+db = "avante"
 
 mydb = mysql.connector.connect(
     host=host,
@@ -40,38 +44,37 @@ def createTriggers(table, action, db):
 
     mycursor.execute(f"show columns from {table}")
     lstColumns = mycursor.fetchall()
-    nvalue = "nvalue='{'+"
-    ovalue = "ovalue='{'+"
+    nvalue = "nvalue=concat('{',"
+    ovalue = "ovalue=concat('{',"
     for columns in lstColumns:
         columns = columns[0]
-        nvalue += f"'{columns}:'+ '\"'+ new.{columns} + '\"'+"
-        ovalue += f"'{columns}:'+ '\"'+ old.{columns} + '\"'+"
+        nvalue += f"'{columns}:'," + "'\"'" + f", new.{columns} ," + "'\"',"
+        ovalue += f"'{columns}:'," + "'\"'" + f", old.{columns} ," + "'\"',"
     nvalue = nvalue[:-1]
-    nvalue += "+'}',"
+    nvalue += ",'}'),"
     ovalue = ovalue[:-1]
-    ovalue += "+'}',"
+    ovalue += ",'}'),"
 
     if action == "insert":
         triggers.append(nvalue)
-        triggers.append("userid = NEW.createdby")
+        triggers.append("\nuserid = NEW.createdby")
     elif action == "delete":
         triggers.append(ovalue)
-        triggers.append("userid = old.createdby")
+        triggers.append("\nuserid = old.createdby")
     else:
         triggers.append(ovalue)
         triggers.append(nvalue)
-        triggers.append("userid = new.createdby")
+        triggers.append("\nuserid = new.createdby")
 
     drop(table, action, db)
     triggers.append(";\n\n")
-    wFile = open(f"{path}\Triggers.sql", "w")
+    # wFile = open(f"{path}\Triggers.sql", "w")
     file = open(f"{path}\Triggers.sql", "a")
     file.writelines(triggers)
 
 
 def drop(table, action, db):
     dTriggers = f"drop trigger {db}.{action}{table}trigger;\n"
-    wFile = open(f"{path}\Delete Triggers.sql", "w")
     file = open(f"{path}\Delete Triggers.sql", "a")
     file.writelines(dTriggers)
 
