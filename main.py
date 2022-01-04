@@ -1,15 +1,19 @@
 import mysql.connector
 
-db = "avante"
+host = input("Host: ")
+user = input("User: ")
+password = input("Password: ")
+db = input("Database: ")
+
 mydb = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="password",
+    host=host,
+    user=user,
+    password=password,
     database=db,
     auth_plugin='mysql_native_password',
 )
 mycursor = mydb.cursor(buffered=True)
-path = "G:\Professional Projects\Avante\code\DB\Triggers"
+path = input("Path of the file where you want to save: ")
 actions = ["insert", "update", "delete"]
 
 
@@ -60,13 +64,15 @@ def createTriggers(table, action, db):
 
     drop(table, action, db)
     triggers.append(";\n\n")
-    # file = open(f"G:\Professional Projects\Avante\code\DB\Triggers\Triggers.sql", "a")
-    # file.writelines(triggers)
+    wFile = open(f"{path}\Triggers.sql", "w")
+    file = open(f"{path}\Triggers.sql", "a")
+    file.writelines(triggers)
 
 
 def drop(table, action, db):
     dTriggers = f"drop trigger {db}.{action}{table}trigger;\n"
-    file = open(f"G:\Professional Projects\Avante\code\DB\Triggers\Delete Triggers.sql", "a")
+    wFile = open(f"{path}\Delete Triggers.sql", "w")
+    file = open(f"{path}\Delete Triggers.sql", "a")
     file.writelines(dTriggers)
 
 
