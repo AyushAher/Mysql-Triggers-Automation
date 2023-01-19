@@ -1,9 +1,14 @@
 import mysql.connector
 
-host = input("Host: ")
-user = input("User: ")
-password = input("Password: ")
-db = input("Database: ")
+# host = input("Host: ")
+# user = input("User: ")
+# password = input("Password: ")
+# db = input("Database: ")
+
+host = "localhost"
+user = "root"
+password = "ayushaher118"
+db = "avante"
 
 
 mydb = mysql.connector.connect(
@@ -14,8 +19,8 @@ mydb = mysql.connector.connect(
     auth_plugin='mysql_native_password',
 )
 mycursor = mydb.cursor(buffered=True)
-path = input("Path of the file where you want to save: ")
-# path = "G:\Professional Projects\Zoho Extensions\Code\DB"
+# path = input("Path of the file where you want to save: ")
+path = "E:\\Projects\\Python\\New folder\\"
 actions = ["insert", "update", "delete"]
 
 
@@ -38,37 +43,36 @@ def createTriggers(table, action, db):
         'id = uuid(),\n',
         "createdon = sysdate(),\n",
         "updatedon = sysdate(),\n",
-        f"screen = '{table}',"
+        f"screen = '{table}',",
     ]
 
     mycursor.execute(f"show columns from {table}")
     lstColumns = mycursor.fetchall()
-    nvalue = "\nnvalue=concat('`{',"
-    ovalue = "\novalue=concat('`{',"
+    nvalue = "\nnvalue=JSON_OBJECT("
+    ovalue = "\novalue=JSON_OBJECT("
     for columns in lstColumns:
         columns = columns[0]
-        nvalue += "'\"'" + f",'{columns}'," + "'\"'" + ",':'," + "'\"'" + f", new.{columns} ," + "'\",',"
-        ovalue += "'\"'" + f",'{columns}'," + "'\"'" + ",':'," + "'\"'" + f", old.{columns} ," + "'\",',"
+        nvalue += f"'{columns}',"  + f"new.{columns},"
+        ovalue += f"'{columns}',"  + f"old.{columns},"
     nvalue = nvalue[:-1]
-    nvalue = nvalue[:len(nvalue) - 5]
-    nvalue += ",'\"'"
-    nvalue += ",'}`'),"
+    nvalue += "),"
 
     ovalue = ovalue[:-1]
-    ovalue = ovalue[:len(ovalue) - 5]
-    ovalue += ",'\"'"
-    ovalue += ",'}`'),"
+    ovalue += "),"
 
     if action == "insert":
         triggers.append(nvalue)
-        triggers.append("\nuserid = NEW.createdby") # chheck wheather or not u want the userid or not
+        triggers.append("\nuserid = NEW.createdby,") # chheck wheather or not u want the userid or not
+        triggers.append("\ncompanyid = new.companyid")
     elif action == "delete":
         triggers.append(ovalue)
-        triggers.append("\nuserid = old.updatedby")
+        triggers.append("\nuserid = old.updatedby,")
+        triggers.append("\ncompanyid = old.companyid")
     else:
         triggers.append(ovalue)
         triggers.append(nvalue)
-        triggers.append("\nuserid = new.updatedby")
+        triggers.append("\nuserid = new.updatedby,")
+        triggers.append("\ncompanyid = new.companyid")
 
     drop(table, action, db)
     triggers.append(";\n\n")
